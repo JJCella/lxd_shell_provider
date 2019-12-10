@@ -22,7 +22,7 @@ pool = ContainerPool(json.load(open('config/container.json')))
 logger = logging.getLogger('main')
 logger.setLevel(logging.INFO)
 
-ssh_config = json.load(open('config/ssh.json'))
+ssh_config = json.load(open('config/container_ssh.json'))
 
 
 async def handle_client(client_process):
