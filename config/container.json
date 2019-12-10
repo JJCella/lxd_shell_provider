@@ -1,0 +1,13 @@
+{
+  "source": {
+    "type": "copy",
+    "source": "debian-base/snap"
+  },
+  "config": {
+    "limits.cpu.allowance": "25ms/200ms",
+    "limits.cpu.priority": "0",
+    "limits.memory": "100MB",
+    "security.privileged": "0",
+    "user.proxy": "0"
+  }
+}
