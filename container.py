@@ -12,19 +12,19 @@ from fakerproviders import GreekMythologicalFiguresProvider
 
 class ContainerPool:
 
-    def __init__(self, config, size=1, max_size=5):
-        self.__size = size
-        self.__max_size = max_size
+    def __init__(self, pool_config, container_config):
+        self.__size = pool_config['available_size']
+        self.__max_size = pool_config['max_size']
         self.__logger = logging.getLogger(self.__class__.__name__)
         self.__logger.setLevel(logging.INFO)
         self.__container_pool = list()
         self.__stopped = False
-        self.__config = config
+        self.__container_config = container_config
         self.__faker = Faker()
         self.__faker.add_provider(GreekMythologicalFiguresProvider)
 
     async def run(self):
-        self.__logger.info("Starting")
+        self.__logger.info("Starting pool")
         try:
             await self.print_pool_infos()
             while not self.__stopped:
@@ -47,7 +47,7 @@ class ContainerPool:
         self.__stopped = True
 
     async def push(self, name):
-        config = copy.deepcopy(self.__config)
+        config = copy.deepcopy(self.__container_config)
         config.update({'name': name})
         new_container = await AsyncContainer.create(config)
         if new_container:
@@ -72,7 +72,7 @@ class ContainerPool:
     async def print_pool_infos(self):
         total_containers = len(await AsyncContainer.all())
         self.__logger.info(
-            "Pool {} | Total LXC : {}/{} - host memory : {}".format(len(self), total_containers, self.__max_size, Byte(
+            "Pool size : {} | Total LXC : {}/{} - host memory : {}".format(len(self), total_containers, self.__max_size, Byte(
                 psutil.virtual_memory().available).best_prefix()))
         if total_containers == self.__max_size:
             self.__logger.warning("Max container limit reached")
@@ -103,7 +103,7 @@ class AsyncContainer:
                                                                                                cls.__lxd_client, config,
                                                                                                wait=True, target=None))
         except pylxd.exceptions.NotFound as e:
-            logger.critical(e)
+            logger.critical('{} - Please configure source field in config/container.json'.format(e))
             return
 
         return cls(new_container)
@@ -172,7 +172,7 @@ class AsyncContainer:
                 for address in (await self.state()).network[interface]['addresses']:
                     if address['family'] == 'inet':
                         self.ip = address['address']
-                        self.__logger.info("Container online")
+                        self.__logger.info("Container online - {}".format(self.ip))
                         return self.ip
             except KeyError:
                 await asyncio.sleep(0.5)

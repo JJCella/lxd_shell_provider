@@ -1,5 +1,5 @@
 {
-    "port": 2222,
+    "port": 222,
     "host_keys": "private.pem",
     "keepalive_interval": 10,
     "keepalive_count_max" : 10,
