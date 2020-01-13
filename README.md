@@ -7,7 +7,7 @@
  - Python 3.4+
  - Python packages described in *requirements.txt*
 
-## Configuration
+## Installation
 
  1. Configure your pool (we are using LVM) and linux bridge for your containers by running `lxd init`
  2. Create a container, it will be your base container for the LXC pool
@@ -20,16 +20,31 @@
  9. Run sshproxy.py
 
  
-## TODO Configuation on Debian
+## Installation details (Debian 10)
+### LXD installation
 
-apt install snapd python3 python3-pip lvm2
-snap install lxd
-lxd init
+`$ apt install snapd python3 python3-pip lvm2`  
+`$ snap install lxd`  
 
-lxc storage set lvm volume.size 500MB
-lxc launch images:debian/buster/amd64
+### LXD initialization
+`$ lxd init`  
+`$ lxc storage set vgname volume.size 500MB`  
 
-git clone https://github.com/JJCella/lxd_shell_provider
-cd lxd_shell_provider
-pip3 install -r requirements.txt
-python3 sshproxy.py
+### Base container creation
+`$ lxc launch images:debian/buster/amd64 debian-base`  
+`$ lxc snapshot debian-base snap`  
+
+`$ lxc exec debian-base /bin/bash`  
+`$ apt update && apt install openssh-server -y`  
+`$ passwd root`  
+`$ adduser debian`  
+
+### 
+
+  
+`$ git clone https://github.com/JJCella/lxd_shell_provider`  
+`$ cd lxd_shell_provider`  
+Configure json files  (see 5-6-7)  
+`$ openssl genrsa -out private.pem 2048`
+`$ pip3 install -r requirements.txt`  
+`$ python3 sshproxy.py`  
