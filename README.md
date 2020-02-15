@@ -1,4 +1,4 @@
-# Installation
+![Diagramm](diagram.png)
 
 ## Requirements
 
